@@ -1,6 +1,9 @@
-variable "location" {}
-variable "aws_access_key" {}
-variable "aws_secret_key" {}
+variable "location" {
+}
+variable "aws_access_key" {
+}
+variable "aws_secret_key" {
+}
 
 variable "prefix" {
     default = "satya"
@@ -8,8 +11,8 @@ variable "prefix" {
 
 variable "tagging" {
   type = object({
-    env = "string"
-    application = "string"
+    env = string
+    application = string
   })
   default = {
     application = "web"
@@ -23,16 +26,20 @@ variable "tagging" {
 
 variable "subnet" {
   type = list
-  default = ["10.0.1.0/24 , 10.0.2.0/24"] 
+  default = ["192.168.1.0/24" , "192.168.2.0/24"] 
 }
 
 variable "env" {
   default = "prod"
 }
 
-variable "ami_id" {}
+variable "ami_id" {
+  default = ""
+}
 
-variable "instance_type" {}
+variable "instance_type" {
+  default = ""
+}
 
 variable "azs" {
   type = list

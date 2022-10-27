@@ -1,7 +1,7 @@
 data "template_file" "policydata" {
     template = "${file("policy.json")}"
     vars = {
-        bucket_name = "${var.aws_s3_bucket.bucketname.bucket}"
+        bucket_name = "${aws_s3_bucket.bucketname.bucket}"
     }
 }
 output "rendering" {
