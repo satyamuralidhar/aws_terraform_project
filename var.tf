@@ -33,3 +33,8 @@ variable "env" {
 variable "ami_id" {}
 
 variable "instance_type" {}
+
+variable "azs" {
+  type = list
+  default = ["ap-south-1a" , "ap-south-1b"]
+}
