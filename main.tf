@@ -1,4 +1,7 @@
-//cretaing a virtual network 
+
+#-----------------------------------------
+#cretaing a virtual network 
+#-----------------------------------------
 
 resource "aws_vpc" "main" {
   cidr_block       = "192.168.0.0/16"
@@ -8,7 +11,10 @@ resource "aws_vpc" "main" {
     Name = "${var.env}-vpc"
   }
 }
-//subnet creation of vnet
+
+#---------------------------------------
+#subnet creation of vnet
+#----------------------------------------
 resource "aws_subnet" "subnet" {
   vpc_id = "${aws_vpc.main.id}"
   count = "${length(var.subnet)}"
@@ -20,7 +26,10 @@ resource "aws_subnet" "subnet" {
     "Name" = "subnet-${count.index+1}"
   }
 }
-//creating route table 
+
+#---------------------------------------
+#creating route table
+#--------------------------------------- 
 
 resource "aws_route_table" "route" {
   vpc_id = "${aws_vpc.main.id}"
@@ -37,6 +46,10 @@ resource "aws_route_table" "route" {
   ]
 }
 
+#-------------------------------------------
+#route table creation
+#-------------------------------------------
+
 resource "aws_route_table_association" "table_association" {
   count = length(var.subnet)
   subnet_id = "${aws_subnet.subnet[0].id}"
@@ -44,7 +57,10 @@ resource "aws_route_table_association" "table_association" {
   //gateway_id = "${aws_internet_gateway.gw.id}"
 }
 
-// internet gateways
+#----------------------------------------
+#internet gateways
+#----------------------------------------
+
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.main.id
   depends_on = [
@@ -53,22 +69,10 @@ resource "aws_internet_gateway" "gw" {
   ]
 }
 
-//creating linux vm 
-resource "aws_instance" "linux_instance" {
-  ami = "${var.ami_id}"
-  instance_type = "${var.instance_type}"
-  security_groups = [ "${aws_security_group.web_sg.id}" ]
-  subnet_id = "${aws_subnet.subnet[0].id}"
-  associate_public_ip_address = true
-  #create a webserver nginx
-  tags = {
-    Name = "Webserver-${var.env}"
-  }
-  depends_on = [
-    aws_security_group.web_sg
-  ]
+#-------------------------------------------
+#creating security group
+#-------------------------------------------
 
-}
 
 resource "aws_security_group" "web_sg" {
   name        = "web_sg"
@@ -108,6 +112,31 @@ resource "aws_security_group" "web_sg" {
     aws_subnet.subnet
   ]
 }
+
+#--------------------------------------------
+#creating linux vm
+#--------------------------------------------
+
+resource "aws_instance" "linux_instance" {
+  ami = "${var.ami_id}"
+  instance_type = "${var.instance_type}"
+  security_groups = [ "${aws_security_group.web_sg.id}" ]
+  subnet_id = "${aws_subnet.subnet[0].id}"
+  associate_public_ip_address = true
+  #create a webserver nginx
+  tags = {
+    Name = "Webserver-${var.env}"
+  }
+  depends_on = [
+    aws_security_group.web_sg
+  ]
+
+}
+
+#-----------------------------------
+#generate a privatekey to loginto instance
+#-----------------------------------
+
 resource "tls_private_key" "pk" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -115,7 +144,10 @@ resource "tls_private_key" "pk" {
   aws_instance.linux_instance
 ]
 }
+
+#-------------------------------
 #create a key form aws 
+#-------------------------------
 
 resource "aws_key_pair" "kp" {
   key_name   = "myKey"  
@@ -130,6 +162,10 @@ resource "aws_key_pair" "kp" {
 ]
 
 }
+
+#-------------------------------------------
+#creating null resource
+#-------------------------------------------
 
 # resource "null_resource" "permissions" {
 #   provisioner "local-exec" {
