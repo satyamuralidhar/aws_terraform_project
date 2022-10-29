@@ -5,4 +5,4 @@ rm terraform.tfstate.backup
 rm tfplan
 rm tfplan.json
 rm -r .terraform/
-.terraform.lock.hcl
+rm -rf .terraform.lock.hcl
