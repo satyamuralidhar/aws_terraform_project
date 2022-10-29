@@ -57,9 +57,16 @@ resource "aws_internet_gateway" "gw" {
 resource "aws_instance" "linux_instance" {
   ami = "${var.ami_id}"
   instance_type = "${var.instance_type}"
+  security_groups = [ "${aws_security_group.web_sg.id}" ]
   subnet_id = "${aws_subnet.subnet[0].id}"
   associate_public_ip_address = true
   #create a webserver nginx
+  tags = {
+    Name = "Webserver-${var.env}"
+  }
+  depends_on = [
+    aws_security_group.web_sg
+  ]
 
 }
 
@@ -121,6 +128,7 @@ resource "aws_key_pair" "kp" {
   depends_on = [
   aws_instance.linux_instance
 ]
+
 }
 
 # resource "null_resource" "permissions" {
